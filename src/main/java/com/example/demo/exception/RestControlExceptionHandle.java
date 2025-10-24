@@ -13,21 +13,15 @@ public class RestControlExceptionHandle {
     @ExceptionHandler({CommonException.class})
     @ResponseBody
     public ResponseEntity<ApiResponse<?>> resolveCommonException(CommonException e) {
-        return ResponseEntity
-                .status(e.getHttpStatus())
-                .body(ApiResponse.builder()
-                        .message(e.getMessage())
-                        .success(false)
-                        .build());
+    ApiResponse<Object> body = ApiResponse.of(false, e.getMessage(), null);
+    return ResponseEntity.status(e.getHttpStatus()).body(body);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseBody
     public ResponseEntity<ApiResponse<?>> resolveInvalidException(MethodArgumentNotValidException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.builder()
-                .message(e.getAllErrors().get(0).getDefaultMessage())
-                .success(false)
-                .build());
+        ApiResponse<Object> body = ApiResponse.of(false, e.getAllErrors().get(0).getDefaultMessage(), null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
 }
