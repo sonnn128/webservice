@@ -1,0 +1,15 @@
+name: base
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD-root}
+      MYSQL_USER: mql_user
+      MYSQL_PASSWORD: mql_pw
+      MYSQL_DATABASE: mql_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      # - ./shopping.sql:/docker-entrypoint-initdb.d/shopping.sql
+
