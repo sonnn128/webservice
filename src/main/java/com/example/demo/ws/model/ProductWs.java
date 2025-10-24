@@ -9,22 +9,25 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ProductWs {
 
-    @XmlElement
+    private static final String NAMESPACE = "http://example.com/demo/ws/products";
+
+    @XmlElement(namespace = NAMESPACE)
     private Long id;
 
-    @XmlElement
+    @XmlElement(namespace = NAMESPACE)
     private String name;
 
-    @XmlElement
-    private double price;
+    // use Double to allow null mapping from DB (primitive double defaults to 0.0)
+    @XmlElement(namespace = NAMESPACE)
+    private Double price;
 
-    @XmlElement
+    @XmlElement(namespace = NAMESPACE)
     private String description;
 
     public ProductWs() {
     }
 
-    public ProductWs(Long id, String name, double price, String description) {
+    public ProductWs(Long id, String name, Double price, String description) {
         this.id = id;
         this.name = name;
         this.price = price;

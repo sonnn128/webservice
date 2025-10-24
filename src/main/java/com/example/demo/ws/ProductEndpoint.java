@@ -11,10 +11,11 @@ import com.example.demo.ws.model.UpdateProductRequest;
 import com.example.demo.ws.model.UpdateProductResponse;
 import com.example.demo.ws.model.DeleteProductRequest;
 import com.example.demo.ws.model.DeleteProductResponse;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -22,6 +23,8 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class ProductEndpoint {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProductEndpoint.class);
 
     private static final String NAMESPACE_URI = "http://example.com/demo/ws/products";
 
@@ -67,11 +70,16 @@ public class ProductEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "updateProductRequest")
     @ResponsePayload
-    @Transactional
     public UpdateProductResponse updateProduct(@RequestPayload UpdateProductRequest request) {
         UpdateProductResponse response = new UpdateProductResponse();
         try {
             Long id = request.getId();
+            if (id == null) {
+                response.setSuccess(false);
+                response.setMessage("Error updating product: id must not be null");
+                logger.warn("updateProduct called with null id");
+                return response;
+            }
             Product existing = productRepository.findById(id).orElse(null);
             if (existing == null) {
                 response.setSuccess(false);
@@ -85,6 +93,7 @@ public class ProductEndpoint {
             response.setSuccess(true);
             response.setMessage("Product updated successfully");
         } catch (Exception ex) {
+            logger.error("Error in updateProduct", ex);
             response.setSuccess(false);
             response.setMessage("Error updating product: " + ex.getMessage());
         }
@@ -93,11 +102,16 @@ public class ProductEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "deleteProductRequest")
     @ResponsePayload
-    @Transactional
     public DeleteProductResponse deleteProduct(@RequestPayload DeleteProductRequest request) {
         DeleteProductResponse response = new DeleteProductResponse();
         try {
             Long id = request.getId();
+            if (id == null) {
+                response.setSuccess(false);
+                response.setMessage("Error deleting product: id must not be null");
+                logger.warn("deleteProduct called with null id");
+                return response;
+            }
             if (!productRepository.existsById(id)) {
                 response.setSuccess(false);
                 response.setMessage("Product not found with id: " + id);
@@ -107,6 +121,7 @@ public class ProductEndpoint {
             response.setSuccess(true);
             response.setMessage("Product deleted successfully");
         } catch (Exception ex) {
+            logger.error("Error in deleteProduct", ex);
             response.setSuccess(false);
             response.setMessage("Error deleting product: " + ex.getMessage());
         }

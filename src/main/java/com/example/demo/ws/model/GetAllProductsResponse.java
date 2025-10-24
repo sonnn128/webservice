@@ -11,8 +11,10 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GetAllProductsResponse {
 
-    @XmlElementWrapper(name = "products")
-    @XmlElement(name = "product")
+    private static final String NAMESPACE = "http://example.com/demo/ws/products";
+
+    @XmlElementWrapper(name = "products", namespace = NAMESPACE)
+    @XmlElement(name = "product", namespace = NAMESPACE)
     private List<ProductWs> products;
 
     public List<ProductWs> getProducts() {
